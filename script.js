@@ -1,4 +1,4 @@
-// script.js — progressive avatar loading + smaller ID flow (drop-in)
+// Progressive avatar + smaller ID (clean build)
 
 document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("twitter-form");
@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const downloadBtn = document.getElementById("download-btn");
   const confirmedRibbon = document.getElementById("confirmed-ribbon");
 
-  // tiny inline placeholder (used only if low-res fails)
+  // tiny inline placeholder (if low-res fails)
   const LOCAL_PLACEHOLDER = "data:image/svg+xml;utf8," + encodeURIComponent(`
     <svg xmlns='http://www.w3.org/2000/svg' width='256' height='256'>
       <rect width='100%' height='100%' fill='#0b1220'/>
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
       <rect x='74' y='160' width='108' height='72' rx='14' fill='#8da3b8'/>
     </svg>`);
 
-  // CORS-safe proxy for canvas (so downloads work with the avatar embedded)
+  // CORS-safe proxy for canvas (so downloads include the avatar)
   const proxify = (raw) => {
     const noProto = raw.replace(/^https?:\/\//, "");
     return `https://images.weserv.nl/?url=${encodeURIComponent(noProto)}&w=512&h=512&fit=cover&il&af`;
@@ -32,9 +32,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   function setRibbonWidthToProfile(){
     const w = Math.round(profileImg.getBoundingClientRect().width);
-    if (w > 0 && confirmedRibbon) {
-      confirmedRibbon.style.setProperty("--confirm-width", w + "px");
-    }
+    if (w > 0 && confirmedRibbon) confirmedRibbon.style.setProperty("--confirm-width", w + "px");
   }
   window.addEventListener("resize", setRibbonWidthToProfile);
 
@@ -50,7 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
       el.onload=()=>res(true); el.onerror=()=>res(true); });
   }
 
-  // ---------- Avatar discovery helpers ----------
+  /* ---------- Avatar discovery ---------- */
   async function fetchViaLegacyJSON(handle){
     try {
       const u = handle.replace(/^@/,"").trim();
@@ -59,9 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!r.ok) return null;
       const data = await r.json();
       if (!Array.isArray(data) || !data[0] || !data[0].profile_image_url) return null;
-      // give both sizes so we can do progressive swap
       return {
-        low: proxify(data[0].profile_image_url),                       // _normal
+        low: proxify(data[0].profile_image_url),                         // ..._normal
         high: proxify(data[0].profile_image_url.replace("_normal","_400x400"))
       };
     } catch { return null; }
@@ -74,9 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const r = await fetch(url, { cache: "no-store" });
       if(!r.ok) return null;
       const data = await r.json();
-      if (data?.url) {
-        return { low: proxify(data.url), high: proxify(data.url) };
-      }
+      if (data?.url) return { low: proxify(data.url), high: proxify(data.url) };
       return null;
     }catch{ return null; }
   }
@@ -109,55 +104,45 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Return {low, high} where low loads instantly and high swaps in later
+  // Build {low, high} for progressive swap
   async function pickAvatarPair(handle){
-    // 1) JSON (Twitter) — fastest and gives both sizes
     let pair = await fetchViaLegacyJSON(handle);
     if (pair) return pair;
 
-    // 2) Unavatar JSON — gives one URL; we’ll use same for low/high
     pair = await fetchViaUnavatarJSON(handle);
     if (pair) return pair;
 
-    // 3) Build a quick "low" from unavatar size=64 while racing for "high"
+    // Fallback: low from unavatar size=64, race for high
     const u = handle.replace(/^@/,"").trim().toLowerCase();
     const low = proxify(`https://unavatar.io/twitter/${u}?fallback=false&size=64`);
-
     let high = await raceImages(avatarSources(handle, Date.now()), raceTimeout);
     if (!high) high = await raceImages(avatarSources(handle, Date.now()+1), raceTimeout);
     if (high) high = proxify(high);
-
     return { low, high: high || low };
   }
 
-  // ---------- Progressive load (low-res first, then swap to high-res) ----------
   async function loadAvatar(handle){
     profileFallback.classList.add("d-none");
 
     const { low, high } = await pickAvatarPair(handle);
 
-    // show low-res immediately (or placeholder if low missing)
     profileImg.setAttribute("fetchpriority","high");
     profileImg.crossOrigin = "anonymous";
     profileImg.referrerPolicy = "no-referrer";
-    profileImg.src = low || LOCAL_PLACEHOLDER;
+    profileImg.src = low || LOCAL_PLACEHOLDER;     // show something immediately
     await waitForImage(profileImg);
     setRibbonWidthToProfile();
 
-    // if we have a better high-res, preload and swap seamlessly
     if (high && high !== low) {
       const hi = new Image();
       hi.crossOrigin = "anonymous";
-      hi.onload = () => {
-        profileImg.src = high;
-        setRibbonWidthToProfile();
-      };
-      hi.onerror = () => { /* keep low-res */ };
+      hi.onload = () => { profileImg.src = high; setRibbonWidthToProfile(); };
+      hi.onerror = () => {};
       hi.src = high;
     }
   }
 
-  // ---------- Submit / Generate ----------
+  /* ---------- Generate ---------- */
   form.addEventListener("submit", async (e)=>{
     e.preventDefault();
     const handle=(handleInput.value||"").trim().replace(/^@/,"");
@@ -166,21 +151,20 @@ document.addEventListener("DOMContentLoaded", () => {
     handleLabel.textContent = `@${handle}`;
     seatLabel.textContent   = randomSeat();
 
-    // QR (320px to match CSS)
     const url = `https://x.com/${handle}`;
     qrImg.crossOrigin = "anonymous";
     qrImg.referrerPolicy = "no-referrer";
-    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&data=${encodeURIComponent(url)}&t=${Date.now()}`;
+    qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(url)}&t=${Date.now()}`;
 
-    // show ID immediately
     formPage.classList.add("d-none");
     idCardPage.classList.remove("d-none");
 
-    // progressive avatar load (instant low-res, then high-res)
     loadAvatar(handle);
+
+    await waitForImage(qrImg);
+    downloadBtn.disabled = false;
   });
 
-  // Optional manual retry
   retryPhotoLink?.addEventListener("click", async (e)=>{
     e.preventDefault();
     const h = (handleLabel.textContent||"").replace(/^@/,"");
@@ -188,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
     await loadAvatar(h);
   });
 
-  // ---------- Download ----------
+  /* ---------- Download ---------- */
   downloadBtn?.addEventListener("click", async ()=>{
     const card = document.getElementById("card");
     const canvas = await html2canvas(card, { backgroundColor:null, useCORS:true, scale:2 });

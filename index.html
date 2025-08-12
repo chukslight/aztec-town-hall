@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>AZTEC TOWN HALL – ID Generator</title>
 
-  <!-- Speed up avatar lookups -->
+  <!-- Preconnects to speed up avatar -->
   <link rel="preconnect" href="https://unavatar.io" crossorigin>
   <link rel="preconnect" href="https://twivatar.glitch.me" crossorigin>
   <link rel="preconnect" href="https://abs.twimg.com" crossorigin>
@@ -18,7 +18,7 @@
 
 <body class="site-bg">
 
-  <!-- ---------- PAGE 1 ---------- -->
+  <!-- Page 1: Centered form -->
   <main id="form-page" class="min-vh-100 d-flex align-items-center justify-content-center px-3">
     <div class="form-card text-center">
       <h1 class="form-title">AZTEC TOWN HALL</h1>
@@ -34,7 +34,7 @@
     </div>
   </main>
 
-  <!-- ---------- PAGE 2 ---------- -->
+  <!-- Page 2: ID Card -->
   <section id="id-card-page" class="d-none min-vh-100 d-flex flex-column align-items-center justify-content-center px-3">
     <div id="card" class="id-card position-relative">
       <img src="townhall-bg.jpg" class="card-bg" alt="Background" crossorigin="anonymous"/>
@@ -68,7 +68,7 @@
     </div>
 
     <div class="actions-bar">
-      <button id="download-btn" class="pill-button big">Download ID</button>
+      <button id="download-btn" class="pill-button big" disabled>Download ID</button>
       <button class="pill-button alt big" onclick="location.reload()">Back</button>
     </div>
   </section>
