@@ -9,49 +9,63 @@ body {
   background: url('aztec-site-bg.jpg') center/cover no-repeat, #0a0f1f;
 }
 
-/* ---------- PAGE 1: CENTERED, BIGGER FORM ---------- */
-.form-card {
-  width: min(92vw, 900px);     /* wider to cover "ec" */
-  height: min(92vw, 900px);    /* square shape */
-  background: rgba(255,255,255,.98);
-  border: 1px solid rgba(0,0,0,.06);
-  border-radius: 28px;
-  box-shadow: 0 30px 120px rgba(0,0,0,.35);
-  padding: 60px 40px;          /* more padding for bigger look */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+/* ---------- PAGE 1: FORM (normal-sized, centered) ---------- */
+#form-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
 }
 
-.form-title {
+.form-card {
+  width: min(92vw, 640px);              /* cap width on large screens */
+  background: rgba(255,255,255,.98);
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 24px;
+  box-shadow: 0 30px 120px rgba(0,0,0,.20);
+  padding: 32px 28px;
+}
+
+.form-title{
   font-weight: 900;
-  font-size: 2.2rem;                       /* bolder/bigger title */
+  font-size: clamp(1.6rem, 3.2vw, 2.4rem);
   color: #0f172a;
   margin-bottom: 8px;
   letter-spacing: .02em;
+  text-align: center;
 }
-.form-sub {
-  margin-bottom: 20px;
+.form-sub{
+  margin-bottom: 18px;
   color: #667085;
-  font-size: 1rem;
+  font-size: clamp(0.95rem, 1.6vw, 1.05rem);
+  text-align: center;
 }
-.form-stack { display: grid; gap: 16px; }
 
-/* pill input row (bigger) */
+.form-stack{
+  width: 100%;
+  max-width: 560px;                     /* keeps input/button from stretching too wide */
+  margin-inline: auto;
+  display: grid;
+  gap: 14px;
+}
+
+/* Input pill */
 .input-pill{
   display:flex; align-items:center; gap:12px;
   background:#ffffff;
   border-radius: 999px;
-  height: 66px;                            /* taller */
+  height: clamp(52px, 6.5vw, 60px);
   padding: 0 16px 0 8px;
-  box-shadow: 0 14px 30px rgba(0,0,0,.10);
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
   border: 1px solid rgba(20,60,140,.12);
+  width: 100%;
 }
 .chip{
   display:grid; place-items:center;
-  width: 52px; height: 52px;               /* bigger chip */
-  font-weight: 900; font-size: 1.15rem; color:#18406e;
+  width: clamp(42px, 6vw, 50px);
+  height: clamp(42px, 6vw, 50px);
+  font-weight: 900; font-size: clamp(1rem, 2.2vw, 1.15rem);
+  color:#18406e;
   background: #eaf4ff;
   border-radius: 999px;
   border: 1px solid rgba(24,64,110,.18);
@@ -59,156 +73,116 @@ body {
 .pill-input{
   flex:1; height: 100%;
   border:0; outline:0; background:transparent;
-  font-size: 1.15rem; color:#0b132b;       /* larger text */
+  font-size: clamp(1rem, 2.2vw, 1.1rem);
+  color:#0b132b;
 }
 .pill-input::placeholder{ color:#97a6b6; font-weight:600; }
 
-/* bigger button */
+/* Button */
 .pill-button{
   display:inline-flex; align-items:center; justify-content:center;
   background: #3db8ff;
   color:#04121f; font-weight: 900;
   border:0; border-radius:999px;
-  height: 60px; padding: 0 26px;           /* taller */
-  box-shadow: 0 14px 30px rgba(0,0,0,.10);
+  height: clamp(48px, 6.2vw, 56px);
+  padding: 0 22px;
+  width: 100%;
+  box-shadow: 0 10px 24px rgba(0,0,0,.08);
   transition: transform .06s ease, filter .2s;
 }
 .pill-button:hover{ filter: brightness(0.96); }
 .pill-button:active{ transform: translateY(1px); }
 .pill-button.alt{ background: transparent; color:#fff; border:3px solid #fff; }
-.pill-button.big{ height: 64px; padding: 0 34px; font-size: 1.12rem; }
+.pill-button.big{ height: clamp(50px, 6.4vw, 60px); padding: 0 28px; font-size: clamp(1rem, 2.2vw, 1.1rem); }
 
-/* ---------- PAGE 2: ID CARD ---------- */
+/* ---------- PAGE 2: ID CARD (normal cap + neat) ---------- */
+#id-card-page{
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 34px 16px 100px;             /* bottom room for sticky buttons */
+}
+
 .id-card{
   position:relative;
-  width:min(96vw, 1100px);
-  min-height:1400px;
+  width: min(96vw, 860px);              /* cap width so it’s not huge on desktop */
   background: rgba(10,8,24,.94);
   border:1px solid rgba(255,255,255,.1);
-  border-radius: 34px;
+  border-radius: 28px;
   overflow:hidden;
-  padding: 50px 44px 210px;
-  box-shadow: 0 60px 160px rgba(0,0,0,.6);
+  padding: 36px 28px 180px;             /* leave space at bottom for QR */
+  box-shadow: 0 50px 140px rgba(0,0,0,.45);
 }
 .card-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:.22; z-index:0; }
 
-/* Title always readable */
+/* Title band readability */
 .id-card::before{
-  content:""; position:absolute; inset:0 0 auto 0; height:140px; z-index:1;
+  content:""; position:absolute; inset:0 0 auto 0; height:120px; z-index:1;
   background: linear-gradient(to bottom, rgba(0,0,0,.45), rgba(0,0,0,0));
 }
-.card-header{ position:relative; z-index:4; margin-bottom:10px; display:flex; align-items:center; gap:24px }
-.logo{ width:150px; height:150px; object-fit:contain; background:rgba(255,255,255,.06); border-radius:16px; padding:12px }
-.title{ font-size:2.8rem; font-weight:900; color:#fff; letter-spacing:.06em; text-transform:uppercase; text-shadow:0 3px 14px rgba(0,0,0,.65); }
+.card-header{ position:relative; z-index:4; margin-bottom:8px; display:flex; align-items:center; gap:18px }
+.logo{ width:100px; height:100px; object-fit:contain; background:rgba(255,255,255,.06); border-radius:12px; padding:8px }
+.title{ font-size: clamp(1.6rem, 3.2vw, 2.2rem); font-weight:900; color:#fff; letter-spacing:.06em; text-transform:uppercase; text-shadow:0 3px 14px rgba(0,0,0,.55); }
 
 .event-date{
   position:relative; z-index:2;
-  margin-top:4px; margin-bottom:16px;
+  margin-top:2px; margin-bottom:14px;
   font-weight:900; opacity:.97;
-  font-size: clamp(1.3rem, 2.8vmin, 1.8rem);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
   color:#fff; text-align:center;
 }
 
-.card-body{ position:relative; z-index:2; display:grid; place-items:center; gap:20px; color:#fff; }
+.card-body{ position:relative; z-index:2; display:grid; place-items:center; gap:16px; color:#fff; }
 .profile-wrap{ position:relative; display:inline-block; }
 .profile{
-  width:420px; height:420px; object-fit:cover;
-  border:10px solid #fff; border-radius:26px; box-shadow:0 24px 60px rgba(0,0,0,.5);
+  width: clamp(260px, 38vw, 360px);      /* reasonable avatar size */
+  height: clamp(260px, 38vw, 360px);
+  object-fit:cover;
+  border:8px solid #fff; border-radius:22px; box-shadow:0 22px 50px rgba(0,0,0,.45);
 }
 .profile-fallback{
   position:absolute; inset:0; display:grid; place-items:center;
   background:rgba(255,255,255,.06); color:#fff; font-weight:700;
-  border-radius:26px; border:2px dashed rgba(255,255,255,.6);
+  border-radius:22px; border:2px dashed rgba(255,255,255,.6);
   backdrop-filter: blur(2px);
 }
-#handle-display{ font-size:2rem; }
-#seat-number{ font-size:1.2rem; }
+#handle-display{ font-size: clamp(1.1rem, 2.6vw, 1.4rem); }
+#seat-number{ font-size: clamp(0.9rem, 2.2vw, 1.05rem); }
 
-/* Ribbon sized to profile width (JS sets CSS var) */
-.confirm-area{ position:relative; z-index:2; display:grid; place-items:center; margin:28px 0 12px; }
+/* Ribbon width follows profile (JS sets var) */
+.confirm-area{ position:relative; z-index:2; display:grid; place-items:center; margin:20px 0 8px; }
 .confirmed-ribbon{
-  width: var(--confirm-width, 420px);
-  min-height: 70px;
+  width: var(--confirm-width, 340px);
+  min-height: 60px;
   display:flex; align-items:center; justify-content:center;
   background:#1877f2; color:#fff; font-weight:900; letter-spacing:.08em;
   border-radius:999px; border:4px solid rgba(255,255,255,.85);
-  box-shadow:0 16px 36px rgba(24,119,242,.35);
-  font-size: clamp(1.1rem, 3.2vmin, 1.6rem);
+  box-shadow:0 12px 28px rgba(24,119,242,.30);
+  font-size: clamp(1rem, 2.4vw, 1.25rem);
 }
 
-.qr-wrap{ position:absolute; left:50%; bottom:34px; transform:translateX(-50%); z-index:2; display:grid; place-items:center; gap:12px; color:#fff; }
-.qr{ width:320px; height:320px; background:#fff; padding:18px; border-radius:20px }
-.qr-caption{ font-size:1.05rem; opacity:.85 }
+/* QR + caption */
+.qr-wrap{ position:absolute; left:50%; bottom:22px; transform:translateX(-50%); z-index:2; display:grid; place-items:center; gap:10px; color:#fff; }
+.qr{ width: clamp(180px, 30vw, 260px); height: clamp(180px, 30vw, 260px); background:#fff; padding:14px; border-radius:16px }
+.qr-caption{ font-size: clamp(0.85rem, 2vw, 1rem); opacity:.85 }
 
-/* Sticky actions so “Download ID” is visible */
+/* Action buttons always visible and not overlapping */
 .actions-bar{
   position: sticky;
-  bottom: 18px;
+  bottom: 14px;
   display: flex;
-  gap: 14px;
+  gap: 12px;
   justify-content: center;
   align-items: center;
-  margin-top: 18px;
+  margin-top: 14px;
   z-index: 10;
 }
 
-/* responsive tweaks for card only */
-@media (max-width: 576px){
-  .id-card{ width:92vw; min-height:1200px; padding:32px 22px 180px; }
-  .profile{ width:320px; height:320px; }
-  .confirmed-ribbon{ width: var(--confirm-width, 320px); }
-  .qr{ width:260px; height:260px; }
-}
-/* ---------- Make the form content fill the big square ---------- */
-.form-card { 
-  /* keep your size; just ease padding across screens */
-  padding: clamp(32px, 4vw, 72px);
-}
-
-/* Title + subtitle larger */
-.form-title{
-  font-weight: 900;
-  font-size: clamp(2.2rem, 3.2vw, 3.4rem);
-  margin-bottom: clamp(8px, 1.2vw, 24px);
-  letter-spacing: .02em;
-}
-.form-sub{
-  font-size: clamp(1rem, 1.4vw, 1.6rem);
-  margin-bottom: clamp(14px, 1.6vw, 28px);
-}
-
-/* Stack width so inputs/buttons stretch nicely inside the big card */
-.form-stack{
-  width: min(86%, 760px);
-  margin-inline: auto;
-  gap: clamp(14px, 1.6vw, 24px);
-}
-
-/* Bigger pill input */
-.input-pill{
-  height: clamp(66px, 7vw, 96px);
-  padding: 0 clamp(16px, 1.8vw, 28px) 0 clamp(8px, 1.2vw, 16px);
-  border-radius: 999px;
-  width: 100%;
-}
-.chip{
-  width: clamp(52px, 5.4vw, 80px);
-  height: clamp(52px, 5.4vw, 80px);
-  font-size: clamp(1.15rem, 1.6vw, 1.6rem);
-}
-.pill-input{
-  font-size: clamp(1.15rem, 1.8vw, 1.8rem);
-}
-
-/* Bigger button to match */
-.pill-button{
-  width: 100%;
-  height: clamp(60px, 6.5vw, 90px);
-  font-size: clamp(1.12rem, 1.6vw, 1.6rem);
-  font-weight: 900;
-}
-
-/* Mobile safety: if the square is too tall, let it relax */
-@media (max-width: 640px){
-  .form-card{ width: 92vw; height: auto; }
+/* ---------- Small screens ---------- */
+@media (max-width: 560px){
+  .form-card{ padding: 24px 18px; }
+  .form-stack{ max-width: 100%; }
+  .id-card{ width: 94vw; padding: 28px 18px 160px; }
+  .logo{ width:84px; height:84px; }
+  .title{ letter-spacing:.04em; }
 }
